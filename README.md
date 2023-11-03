@@ -253,9 +253,11 @@ That's all for Wireguard !
 
 ## MCSManager
 
-On this part we will see how to install MCSManager a minecraft server gestionnary.
+This part will present how to install MCSManager to host and manage Minecraft servers on a web interface.
 
-Like the other service we have to go on portainer and clik on add a new stack, then put this (u can name it "mcs"):
+
+First of all, go to Portainer, add a new stack, name it "mcs", paste the following Docker Compose and deploy it :
+
 ```yaml
 version: '3'
 services:
@@ -290,26 +292,27 @@ volumes:
   mcsmanager-web:
 ```
 
-The problem with this docker-compose is when you want to update somethings on the stack you have to start from scratch the configuration...😔
+The problem with this docker-compose is when you want to update somethings on the stack, you will have to start from scratch the web configuration...😔
 
-So when the stack you have to add the domain name:
+So when the stack is deployed, add the domain name:
 
-Go to npm and create 2 subdomains :
+Go to NPM and create 2 subdomains :
 1. Go to `Proxy Hosts` tab and click on `Add Proxy Host`.
-2. In domain names field, put the subdomain you want to use (for example, `mcs.domain.duckdns.org` or `daemon.domain.duckdns.org`). 
+2. In domain names field, put the subdomain you want to use (for example, `mcs.your-domain.duckdns.org` or `daemon.your-domain.duckdns.org`). 
 3. Choose `http`.
 4. Go to your host and do `ip a` to get your local IP (`10.0.X.X`), go back on NPM and put it in `Forward Hostname/IP` field.
-5. In `Forward Port` field, put the port of the service you want to use ( 23333 for MCS-web, 24444 for the MCS-daemon).
+5. In `Forward Port` field, put the port of the service you want to use (23333 for MCS-web, 24444 for the MCS-daemon).
 6. Tick `Websockets Support`.
 7. Go to SSL tab, choose `Request a new SSL Certificate with Let's Encrypt` and tick `Force SSL`.
 8. Verify your mail and click on `Save`. 
 
-> Don't forget to add the subdomain in the duckdns stack
+> Don't forget to add the subdomain in the DuckDNS stack.
 
 Now go on mcs.domain.duckdns.org and create an admin account.
 
-To create several instance of minecraft server we have to connect the MCS-daemon to the MCS-web
+To create severals instance of Minecraft server we have to connect the MCS-daemon to the MCS-web.
 
+In the MCS-web:
 1. Go in the advanced settings and choose `Daemon`.
 2. Click on `Add Daemon`
 3. `Remark` (Optional): MCS-Daemon
@@ -319,8 +322,9 @@ To create several instance of minecraft server we have to connect the MCS-daemon
 ```bash
 cat /opt/mcsmanager/daemon/data/Config/global.json
 ```
+(to go on the terminal you have to go on the Portainer and click on the `Console` button on the right of the daemon container)
 
-If the connection is <span style="color:green">Online</span> that's work! 👍
+If the connection is <span style="color:green">Online</span> that's okay! 👍
 
 Now you can create a minecraft server (java for example):
 1. Go on `Application`.
@@ -343,7 +347,7 @@ The instance is created.
 7. Wait the creation of the world
 8. When it's done you can connect on the server with the minecraft client (on the default port if you not change the server port)
 
-> don't forget to open your port on Oracle 25665 for the default port and more if you need more server
+> Don't forget to open your port on Oracle 25665 for the default port and more if you need more server.
 🥵
 
 ## Jellyfin
