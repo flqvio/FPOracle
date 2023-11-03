@@ -22,6 +22,7 @@ It contains :
   - [Wireguard VPN](#wireguard-vpn)
   - [MCSManager](#mcsmanager)
   - [Jellyfin](#jellyfin)
+  - [FSAGetter (torrent or ddl)](#fsagetter-torrent-or-ddl)
 
 ## Server creation on Oracle & First config 
 
@@ -184,11 +185,11 @@ Now, you can add your subdomains in the DuckDNS stack (in `SUBDOMAINS` field wit
 I advice you to change the response of the default site in settings to a 404 or 444 error.
 
 
->(For the example, `portainer.domain.duckdns.org` and `npm.domain.duckdns.org`), so in DuckDNS stack in Portainer, add `portainer, npm` in `SUBDOMAINS` field and update the stack.
+>(For the example, `portainer.your-domain.duckdns.org` and `npm.your-domain.duckdns.org`), so in DuckDNS stack in Portainer, add `portainer, npm` in `SUBDOMAINS` field and update the stack.
 
 Now we will create 2 subdomains :
 1. Go to `Proxy Hosts` tab and click on `Add Proxy Host`.
-2. In domain names field, put the subdomain you want to use (for example, `portainer.domain.duckdns.org` or `npm.domain.duckdns.org`). 
+2. In domain names field, put the subdomain you want to use (for example, `portainer.your-domain.duckdns.org` or `npm.your-domain.duckdns.org`). 
 3. Choose `http` (Choose `https` ONLY FOR PORTAINER).
 4. Go to your host and do `ip a` to get your local IP (`10.0.X.X`), go back on NPM and put it in `Forward Hostname/IP` field.
 5. In `Forward Port` field, put the port of the service you want to use (for example, 9443 for Portainer, 81 for NPM).
@@ -196,7 +197,7 @@ Now we will create 2 subdomains :
 7. Go to SSL tab, choose `Request a new SSL Certificate with Let's Encrypt` and tick `Force SSL`.
 8. Verify your mail and click on `Save`. 
 
-Now you can go to `https://portainer.domain.duckdns.org` and `https://npm.domain.duckdns.org` to access to Portainer and Nginx Proxy Manager with HTTPS.
+Now you can go to `https://portainer.your-domain.duckdns.org` and `https://npm.your-domain.duckdns.org` to access to Portainer and Nginx Proxy Manager with HTTPS.
 
 Not mandatory, but you can remove port 81/TCP from your server (see [Important part about firewall rules & Oracle](#important-part-about-firewall-rules--oracle)).
 I advice to keep 9443/TCP for Portainer, cause, if a problem happen with the DNS or your host, you must access it with the public IP and the port.
@@ -346,3 +347,49 @@ The instance is created.
 🥵
 
 ## Jellyfin
+
+This part will present how to install Jellyfin to host and manage a media server to watch your movies, series etc..
+
+First of all, before deploying the stack, you must :
+
+- add a subdomain in DuckDNS stack (for example, `jellyfin.your-domain.duckdns.org`).
+- add a proxy host with the port 8096 in Nginx Proxy Manager (in adequation with the subdomain in DuckDNS stack). Don't forget to tick `Websockets Support`.
+
+Then, go to Portainer, add a new stack, name it "jellyfin", paste the following Docker Compose and deploy it :
+```yaml
+---
+version: "2.1"
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - JELLYFIN_PublishedServerUrl=192.168.0.5 #optional
+    volumes:
+      - /path/to/config:/config
+      - /path/to/series:/data/tvshows
+      - /path/to/films:/data/movies
+    ports:
+      - 8096:8096
+      - 8920:8920 #optional
+      - 7359:7359/udp #optional
+      - 1900:1900/udp #optional
+    restart: unless-stopped
+```
+
+Now, you can go to `https://jellyfin.your-domain.duckdns.org` and create an account.
+
+For the configuration of Jellyfin, watch out about the folder chosen by Jellyfin to store the data. (in this example, you must choose /data/tvshows and /data/movies).
+
+You can follow the official documentation [here](https://jellyfin.org/docs/general/administration/configuration.html).
+
+**Little tip :** On TV with the app, a sound offset can appear. To fix it, change the media player in Settings - Client Settings, Video Player Type from web player to integrated player.
+
+That's all for Jellyfin !
+
+## FSAGetter (torrent or ddl)
+
+>Soon...
