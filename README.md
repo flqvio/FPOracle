@@ -23,6 +23,7 @@ It contains :
   - [MCSManager](#mcsmanager)
   - [Jellyfin](#jellyfin)
   - [FSAGetter (torrent or ddl)](#fsagetter-torrent-or-ddl)
+  - [Grav](#grav)
 
 ## Server creation on Oracle & First config 
 
@@ -397,3 +398,33 @@ That's all for Jellyfin !
 ## FSAGetter (torrent or ddl)
 
 >Soon...
+
+## Grav
+
+This part will present how to install Grav to host and manage a website.
+
+- add a subdomain in DuckDNS stack (for example, `grav.your-domain.duckdns.org`).
+- add a proxy host with the port `your-port` in Nginx Proxy Manager (in adequation with the subdomain in DuckDNS and Docker stack). Don't forget to tick `Websockets Support`.
+
+Then, go to Portainer, add a new stack, name it "grav", paste the following Docker Compose and deploy it :
+```json
+---
+version: "2.1"
+services:
+  grav:
+    image: lscr.io/linuxserver/grav:latest
+    container_name: grav
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /path/to/appdata/config:/config
+    ports:
+      - your-port:80
+    restart: unless-stopped
+```
+
+Now, you can go to `https://grav.your-domain.duckdns.org/admin` and create an account.
+
+That's all for Grav !
